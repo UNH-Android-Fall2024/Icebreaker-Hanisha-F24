@@ -21,11 +21,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnSetRandomQuestion.setOnClickListener{
-            binding.txtQuestion.text = "Hello"
+//            binding.txtQuestion.text = "Hello"
         }
 
         binding.btnSubmit.setOnClickListener{
-            binding.txtQuestion.text=""
+//            binding.txtQuestion.text=""
+            writeStudentToFirebase()
         }
         // Setting the view of the app i.e Resources(res) -> layout -> activity_main.xml
         /* setContentView(R.layout.activity_main)
@@ -34,26 +35,17 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         } */
-        writeStudentToFirebase()
     }
 
     private fun writeStudentToFirebase(){
-        //Getting values & storing it into variables
+        //Getting values from view & storing it into variables
         val firstName = binding.txtFirstName.text
         val lastName = binding.txtLastName.text
         val nickName = binding.txtNickName.text
         val answer = binding.txtAnswer.text
 
-//        Log.d("IcebreakerF24", msg: "Variables: $firstName $lastName $nickName $answer")
-
-        val student = hashMapOf<String,String>(
-            "firstName" to firstName.toString(),
-            "lastName" to lastName.toString(),
-            "nickName" to nickName.toString(),
-            "answer" to answer.toString(),
-            "class" to className,
-            "question" to binding.txtQuestion.text.toString()
-        )
+        // ${} - Needed when we want to access the extension after (.) like(${binding.txtFirstName.text})
+        Log.d("IcebreakerF24","Variables: $firstName,$lastName,$nickName,$answer")
     }
 
 }
