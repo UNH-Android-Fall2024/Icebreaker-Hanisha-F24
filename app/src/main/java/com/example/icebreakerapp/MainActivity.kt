@@ -7,10 +7,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.icebreakerapp.databinding.ActivityMainBinding
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.firestore
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val className = "android-fall24"
+    private val className = "Android-Fall24"
+    //Value stored in variable to access/manipulate DB
+    private val db = Firebase.firestore
+    private val TAG = "IcebeakerF24"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,13 +45,39 @@ class MainActivity : AppCompatActivity() {
 
     private fun writeStudentToFirebase(){
         //Getting values from view & storing it into variables
-        val firstName = binding.txtFirstName.text
-        val lastName = binding.txtLastName.text
-        val nickName = binding.txtNickName.text
-        val answer = binding.txtAnswer.text
+        val firstName = binding.txtFirstName
+        val lastName = binding.txtLastName
+        val nickName = binding.txtNickName
+        val answer = binding.txtAnswer
 
         // ${} - Needed when we want to access the extension after (.) like(${binding.txtFirstName.text})
-        Log.d("IcebreakerF24","Variables: $firstName,$lastName,$nickName,$answer")
-    }
+        Log.d(TAG,"Variables: ${firstName.text},${lastName.text},${nickName.text},${answer.text}")
 
+        val student = hashMapOf(
+            "firstName" to firstName.text.toString(),
+            "lastName" to lastName.text.toString(),
+            "nickName" to nickName.text.toString(),
+            "answer" to answer.text.toString(),
+            "class" to className,
+            "question" to binding.txtQuestion.text.toString()
+        )
+
+        // Access a collection mentioned in collectionPath. If it doesn't exist it creates a new one
+        // Adds data
+        //Check to see if task is done/not done
+        db.collection("Students").add(student)
+            .addOnSuccessListener { documentReference ->
+                Log.d(TAG,"Document added to students collection sucessfully with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener{exception ->
+                Log.w(TAG,"Error adding document",exception)
+            }
+
+        //After storing in database fields need to be cleared
+        firstName.setText("")
+        lastName.setText("")
+        nickName.setText("")
+        answer.setText("")
+
+    }
 }
