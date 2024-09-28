@@ -1,15 +1,28 @@
 package com.example.icebreakerapp
 
+//import android.os.Bundle
+//import android.util.Log
+//import androidx.activity.enableEdgeToEdge
+//import androidx.appcompat.app.AppCompatActivity
+//import androidx.core.view.ViewCompat
+//import androidx.core.view.WindowInsetsCompat
+//import com.example.icebreakerapp.databinding.ActivityMainBinding
+////import com.google.firebase.Firebase
+//import com.google.firebase.firestore.firestore
+//import com.google.firebase.firestore.ktx.firestore
+//import com.google.firebase.ktx.Firebase
+//import com.google.firebase.firestore.toObject
+
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
+import android.view.LayoutInflater
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.example.icebreakerapp.databinding.ActivityMainBinding
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.firestore
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -17,30 +30,29 @@ class MainActivity : AppCompatActivity() {
     //Value stored in variable to access/manipulate DB
     private val db = Firebase.firestore
     private val TAG = "IcebeakerF24"
+    //Mutable means it can change the size/delete/add  i.e works dynamic in nature.
+    // ? -> It is null safe
+    private var questionsList: MutableList<Questions>? = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        getQuestionsFromFirebase()
 
         //Binding - Allows to link our views to controller.It automatically bind our ID's.
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+//        getQuestionsFromFirebase()
 
         binding.btnSetRandomQuestion.setOnClickListener{
-//            binding.txtQuestion.text = "Hello"
+            binding.txtQuestion.text = questionsList!!.random().text
         }
 
         binding.btnSubmit.setOnClickListener{
-//            binding.txtQuestion.text=""
             writeStudentToFirebase()
         }
         // Setting the view of the app i.e Resources(res) -> layout -> activity_main.xml
-        /* setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        } */
+        /* setContentView(R.layout.activity_main) */
     }
 
     private fun writeStudentToFirebase(){
@@ -78,6 +90,32 @@ class MainActivity : AppCompatActivity() {
         lastName.setText("")
         nickName.setText("")
         answer.setText("")
+    }
 
+    private fun getQuestionsFromFirebase(){
+        //It reads all the documents from given collection
+        db.collection("Questions").get()
+            .addOnSuccessListener { result ->
+                // It initializes a mutable list
+                questionsList = mutableListOf()
+                for(document in result){
+                    try {
+                        val question = document.toObject(Questions::class.java)
+                        Log.d("Firestore", "Question: $question")
+                        //Adding to list
+                        // !! -> Forcing not to check null safe
+                        questionsList!!.add(question)
+                        Log.d(TAG,"$question")
+                    } catch (e: Exception) {
+                        Log.e("Firestore", "Error converting document", e)
+                    }
+
+//                    val question = document.toObject(Questions::class.java)
+
+                }
+            }
+            .addOnFailureListener{error ->
+                Log.w(TAG,"Error in retereving the question",error)
+            }
     }
 }
