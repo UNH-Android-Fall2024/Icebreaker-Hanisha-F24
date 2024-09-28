@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     private val className = "Android-Fall24"
     //Value stored in variable to access/manipulate DB
     private val db = Firebase.firestore
-    private val TAG = "IcebeakerF24"
+    private val TAG = "IcebreakerF24"
     //Mutable means it can change the size/delete/add  i.e works dynamic in nature.
     // ? -> It is null safe
     private var questionsList: MutableList<Questions>? = arrayListOf()
