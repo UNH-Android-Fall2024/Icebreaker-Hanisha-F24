@@ -1,18 +1,5 @@
 package com.example.icebreakerapp
 
-//import android.os.Bundle
-//import android.util.Log
-//import androidx.activity.enableEdgeToEdge
-//import androidx.appcompat.app.AppCompatActivity
-//import androidx.core.view.ViewCompat
-//import androidx.core.view.WindowInsetsCompat
-//import com.example.icebreakerapp.databinding.ActivityMainBinding
-////import com.google.firebase.Firebase
-//import com.google.firebase.firestore.firestore
-//import com.google.firebase.firestore.ktx.firestore
-//import com.google.firebase.ktx.Firebase
-//import com.google.firebase.firestore.toObject
-
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -37,12 +24,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        getQuestionsFromFirebase()
-
         //Binding - Allows to link our views to controller.It automatically bind our ID's.
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        getQuestionsFromFirebase()
+        getQuestionsFromFirebase()
 
         binding.btnSetRandomQuestion.setOnClickListener{
             binding.txtQuestion.text = questionsList!!.random().text
@@ -101,17 +86,14 @@ class MainActivity : AppCompatActivity() {
                 for(document in result){
                     try {
                         val question = document.toObject(Questions::class.java)
-                        Log.d("Firestore", "Question: $question")
+                        Log.d(TAG, "Question: $question")
                         //Adding to list
                         // !! -> Forcing not to check null safe
                         questionsList!!.add(question)
                         Log.d(TAG,"$question")
                     } catch (e: Exception) {
-                        Log.e("Firestore", "Error converting document", e)
+                        Log.e(TAG, "Error converting document", e)
                     }
-
-//                    val question = document.toObject(Questions::class.java)
-
                 }
             }
             .addOnFailureListener{error ->
